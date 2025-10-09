@@ -10,6 +10,29 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+export type SiteMode = "normal" | "waitlist";
+
+export interface RootLoaderData {
+  env: {
+    site_mode: SiteMode;
+  };
+}
+
+export function loader({ context }: Route.LoaderArgs): RootLoaderData {
+  const siteMode = context.cloudflare.env.SITE_MODE;
+
+  // Validate the environment variable
+  if (siteMode !== "normal" && siteMode !== "waitlist") {
+    throw new Error(`Invalid SITE_MODE: ${siteMode}. Must be "normal" or "waitlist"`);
+  }
+
+  return {
+    env: {
+      site_mode: siteMode
+    }
+  };
+}
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
